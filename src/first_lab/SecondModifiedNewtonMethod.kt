@@ -15,7 +15,7 @@ class SecondModifiedNewtonMethod(
         var i = 0
         do {
             currentX = prevX - f(prevX) / f_(x0)
-            if (currentX == Float.POSITIVE_INFINITY) {
+            if (abs(currentX) == Float.POSITIVE_INFINITY) {
                 callback.invoke(3, 0, 0f, 0f)
                 return
             }
@@ -29,7 +29,7 @@ class SecondModifiedNewtonMethod(
         callback.invoke(ier, i, currentX, abs(f(currentX)))
     }
 
-    private fun f(x: Float) = x.pow(4) - x.pow(3) - 2 * x.pow(2) + 3 * x - 3
+    private fun f(x: Float) = 2f
 
-    private fun f_(x: Float) = 4 * x.pow(3) - 3 * x.pow(2) - 4 * x + 3
+    private fun f_(x: Float) = 0f
 }
