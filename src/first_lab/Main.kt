@@ -3,8 +3,8 @@ package first_lab
 import java.io.File
 import java.util.*
 
-const val INPUT_FILE = "in.txt"
-const val OUTPUT_FILE = "out.txt"
+private const val INPUT_FILE = "in.txt"
+private const val OUTPUT_FILE = "out.txt"
 
 fun main() {
     val scanner = Scanner(File(INPUT_FILE))
