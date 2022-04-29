@@ -27,7 +27,6 @@ fun main() {
     var count_y = 0
     var count_wrong = 0
 
-
     val scanner = Scanner(File(INPUT_FILE))
 
     x0 = scanner.nextDouble()
@@ -40,7 +39,7 @@ fun main() {
     h0 = RefObject((y0 - x0) / 10)
 
     File(OUTPUT_FILE).bufferedWriter().use { out ->
-        if (!checkInput(x0, y0, c, h0)) {
+        if (!validInput(x0, y0, c, h0)) {
             out.write("Icod=2! Ошибка входных данных!")
             return
         }
@@ -69,7 +68,7 @@ fun main() {
         while (Ch >= h_min) {
             E.argValue = epsN(xi, yc, h0.argValue)
             h0.argValue = makeNeededStep(xi, yc, h0, E, E_max)
-            if (Math.abs(h0.argValue) < h_min) {
+            if (abs(h0.argValue) < h_min) {
                 count_wrong++
             }
             if (h0.argValue < 0) {
@@ -93,7 +92,7 @@ fun main() {
                     h0.argValue.round()
                 }\n"
             )
-            Ch -= Math.abs(h0.argValue)
+            Ch -= abs(h0.argValue)
         }
         xi = if (h0.argValue < 0) {
             -1 * checkOnMax(x0, h_min, -1 * xi, h1, flag)
@@ -115,7 +114,7 @@ fun main() {
             if (h0.argValue == h_max) {
                 count_h_max++
             }
-            if (E.argValue >= E_max || Math.abs(h1.argValue) < h_min) {
+            if (E.argValue >= E_max || abs(h1.argValue) < h_min) {
                 count_wrong++
             }
             h0 = h1
@@ -153,7 +152,7 @@ fun main() {
             if (h0.argValue == h_max) {
                 count_h_max++
             }
-            if (E.argValue >= E_max || Math.abs(h0.argValue) < h_min) {
+            if (E.argValue >= E_max || abs(h0.argValue) < h_min) {
                 count_wrong++
             }
         }
@@ -171,15 +170,14 @@ fun main() {
 }
 
 private fun f(x: Double, y: Double): Double {
-    return 2.0 * x + y - x.pow(2)
+    return 32 * x.pow(3)
 }
 
 private fun Y1(x0: Double, y0: Double, h: Double): Double {
     val K1 = f(x0, y0)
     val K2 = f(x0 + 0.33 * h, y0 + 0.33 * K1)
-    val K3 = f(x0 + 0.66 * h, y0 - 0.33 * K1 + K2)
-    val K4 = f(x0 + h, y0 + K1 - K2 + K3)
-    val res = y0 + 1.0 / 8.0 * (K1 + 3 * K2 + 3 * K3 + K4)
+    val K3 = f(x0 + 0.66 * h, y0 + 0.66 * K2)
+    val res = y0 + 1.0 / 4.0 * (K1 + 3 * K3)
     return res
 }
 
@@ -216,7 +214,7 @@ private fun checkOnMax(
     val a: Int = (2 * h_min).toInt()
     val b: Int = (B - xn).toInt()
     val c: Int = (1.5 * h_min).toInt()
-    if (B - xn >= 2 * h_min) {
+    if (b >= a) {
         xn = B - h_min
         if (xn < 0) {
             h_min = -h_min
@@ -224,12 +222,12 @@ private fun checkOnMax(
         h0.argValue = h_min
         flag.argValue = true
     } else {
-        if (B - xn <= 1.5 * h_min) {
+        if (b <= c) {
             xn = B
         } else {
-            if (1.5 * h_min < B - xn && B - xn < 2 * h_min) {
-                xn += (B - xn) / 2
-                h0.argValue = (B - xn) / 2
+            if (c < b && b < a) {
+                xn += b / 2
+                h0.argValue = b / 2.0
                 flag.argValue = true
             }
         }
@@ -246,16 +244,13 @@ private fun makeNeededStep(
 ): Double {
     var yn = yn
     var A: Double
-    var a: Double
-    var b: Double
-    var c: Double
     if (E.argValue == 0.0) {
         A = 2.0
         h0.argValue *= A
     } else {
         if (E.argValue > E_max) {
             while (E.argValue > E_max) {
-                A = Math.pow(E_max / E.argValue, 1 / 3.0)
+                A = (E_max / E.argValue).pow(1 / 3.0)
                 h0.argValue *= A
                 yn = Y1(xn, yn, h0.argValue)
                 E.argValue = epsN(xn, yn, h0.argValue)
@@ -265,7 +260,7 @@ private fun makeNeededStep(
             }
         } else {
             while (E.argValue < E_max) {
-                A = Math.pow(E_max / E.argValue, 1 / 3.0)
+                A = (E_max / E.argValue).pow(1 / 3.0)
                 h0.argValue *= A
                 yn = Y1(xn, yn, h0.argValue)
                 E.argValue = epsN(xn, yn, h0.argValue)
@@ -282,7 +277,7 @@ private fun makeNeededStep(
     return h0.argValue
 }
 
-private fun checkInput(a: Double, b: Double, c: Double, h: RefObject<Double>): Boolean {
+private fun validInput(a: Double, b: Double, c: Double, h: RefObject<Double>): Boolean {
     var flag = true
     if (a >= b) {
         flag = false
